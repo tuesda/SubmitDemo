@@ -357,7 +357,7 @@ int id action_menu_presenter 0x7f0c0003
 int id action_mode_bar 0x7f0c002e
 int id action_mode_bar_stub 0x7f0c002d
 int id action_mode_close_button 0x7f0c0020
-int id action_settings 0x7f0c0040
+int id action_settings 0x7f0c003f
 int id activity_chooser_view_content 0x7f0c0021
 int id always 0x7f0c0016
 int id beginning 0x7f0c0013
@@ -401,7 +401,6 @@ int id showCustom 0x7f0c000f
 int id showHome 0x7f0c0010
 int id showTitle 0x7f0c0011
 int id split_action_bar 0x7f0c0007
-int id submit 0x7f0c003f
 int id submit_area 0x7f0c003c
 int id tabMode 0x7f0c000b
 int id title 0x7f0c0027

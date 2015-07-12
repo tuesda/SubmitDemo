@@ -1,17 +1,43 @@
 package com.tuesda.submitdemo;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import com.tuesda.submit.SubmitView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
+
+    private SubmitView mSubmit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSubmit = (SubmitView) findViewById(R.id.submit);
+        mSubmit.setBackColor(0xff0097cd);
+
+        mSubmit.setProgress(1);
+
+        mSubmit.setOnProgressStart(new SubmitView.OnProgressStart() {
+            @Override
+            public void progressStart() {
+                // do something when progress start
+            }
+        });
+
+        mSubmit.setOnProgressDone(new SubmitView.OnProgressDone() {
+            @Override
+            public void progressDone() {
+                // do something when progress is done
+            }
+        });
     }
 
     @Override

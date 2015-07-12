@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -44,6 +45,8 @@ public class SubmitView extends View {
 
     // indicate the animator state
     private AniState mAniState = AniState.INIT;
+
+    private boolean mIfReset = false;
 
     enum AniState {
         INIT,
@@ -134,6 +137,9 @@ public class SubmitView extends View {
         mTextBounds = new Rect();
         mCanClick = true;
 
+        mProgress = 0;
+        mTargetProgress = 0;
+
 
 
 
@@ -176,10 +182,12 @@ public class SubmitView extends View {
         }
     }
 
+    private RectF rectF = new RectF();
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        // Log.i("submit", "cur state: " + mAniState); // open for debug
+        Log.i("submit", "cur state: " + mAniState); // open for debug
 
         switch (mAniState) {
             case INIT:
@@ -217,7 +225,7 @@ public class SubmitView extends View {
                 break;
             case FOURTH_START:
                 // Log.i("submit", "" + progress);
-                if (progress>=1) {
+                if (mProgress>=1) {
                     if (mOnProgressDone!=null) {
                         mOnProgressDone.progressDone();
                     }
@@ -226,11 +234,14 @@ public class SubmitView extends View {
                     initFifthAni();
                 }
                 mBorderPaint.setColor(COLOR_GREY);
-                canvas.drawCircle(mWidth/2, mHeight/2, mRadius, mBorderPaint);
+                canvas.drawCircle(mWidth / 2, mHeight / 2, mRadius, mBorderPaint);
                 mBorderPaint.setColor(mColor);
                 canvas.drawArc(new RectF(mWidth / 2 - mRadius, mHeight / 2 - mRadius, mWidth / 2 + mRadius, mHeight/2 + mRadius),
-                        START_DEGREE, 360 * progress, false, mBorderPaint);
-                progress += 0.005;  // for debug
+                        START_DEGREE, 360 * mProgress, false, mBorderPaint);
+                if (mProgress < mTargetProgress) {
+                    mProgress += 0.005;
+                    mProgress = Math.min(mProgress, 1);
+                }
                 break;
             case FIFTH_START:
                 int leftFifthR = mWidth/2 - getFifthHorizonR();
@@ -241,6 +252,13 @@ public class SubmitView extends View {
                 canvas.drawRoundRect(new RectF(leftFifthR, mHeight / 2 - mRadius, rightFifthR, mHeight / 2 + mRadius),
                         mRadius, mRadius, mBackPaint);
                 drawCorrectSign(canvas, getFifthRatio());
+                if (getFifthRatio()>=1 && mIfReset) {
+                    Log.i("submit", "reset is valid");
+                    mIfReset = false;
+                    mAniState = AniState.INIT;
+                    initView(null, null, 0);
+                    invalidate();
+                }
                 break;
             case FIFTH_STOP:
                 canvas.drawRoundRect(new RectF(PADDING, mHeight/2 - mRadius, mWidth - PADDING, mHeight/2 + mRadius),
@@ -256,6 +274,8 @@ public class SubmitView extends View {
         if (mAniState.isPlaying()) {
             invalidate();
         }
+
+
     }
 
     // private int forDeubug = 0; // to count for debug
@@ -263,7 +283,7 @@ public class SubmitView extends View {
 
 
     // first animation
-    private static final int FIRST_DURATION = 500;
+    private static final int FIRST_DURATION = 300;
     private long mFirstStartT;
     private long mFirstStopT;
 
@@ -346,6 +366,7 @@ public class SubmitView extends View {
         if (now >= mThirdStopT) {
             mAniState = AniState.THIRD_STOP;
             mAniState = AniState.FOURTH_START;
+            initFourthAni();
             return 1;
         }
 
@@ -381,20 +402,40 @@ public class SubmitView extends View {
 
     // used for fourth animation but this not use time to calculate animation
     private static final int START_DEGREE = 270;
-    private float progress = 0f;
-    private OnProgressDone mOnProgressDone;
+    private float mProgress = 0f;
+    private float mTargetProgress = mProgress;
 
-    public void setProgress(float progress) {
-        this.progress = progress;
+
+    private OnProgressDone mOnProgressDone;
+    private OnProgressStart mOnProgressStart; // listener for when progress start
+
+    private void initFourthAni() {
+        if (mOnProgressStart!=null) {
+            mOnProgressStart.progressStart();
+        }
     }
+
+    // set current progress
+    public void setProgress(float progress) {
+        mTargetProgress = progress > 1 ? 1 : progress;
+    }
+
+
     public void setOnProgressDone(OnProgressDone onProgressDone) {
         mOnProgressDone = onProgressDone;
+    }
+
+
+    public void setOnProgressStart(OnProgressStart onProgressStart) {
+        mOnProgressStart = onProgressStart;
     }
     public boolean isProgressDone() {
         return mAniState==AniState.FOURTH_STOP
                 || mAniState == AniState.FIFTH_START
                 || mAniState == AniState.FIFTH_STOP;
     }
+
+
 
     public void setText(String str) {
         if (str==null || TextUtils.isEmpty(str)) {
@@ -404,8 +445,7 @@ public class SubmitView extends View {
     }
 
     public void reset() {
-        mAniState = AniState.INIT;
-        invalidate();
+        mIfReset = true;
     }
 
     public void setBackColor(int color) {
@@ -477,5 +517,8 @@ public class SubmitView extends View {
 
     public interface OnProgressDone {
         void progressDone();
+    }
+    public interface OnProgressStart {
+        void progressStart();
     }
 }

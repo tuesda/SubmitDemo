@@ -1,27 +1,18 @@
 package com.tuesda.submit;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
 public class MainActivity extends Activity {
-    private SubmitView submit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        submit = (SubmitView) findViewById(R.id.submit);
-        submit.setBackColor(0xff0097cd);
-        submit.setOnProgressDone(new SubmitView.OnProgressDone() {
-            @Override
-            public void progressDone() {
-                submit.setBackColor(0xff00cd97);
-            }
-        });
+
     }
 
     @Override
