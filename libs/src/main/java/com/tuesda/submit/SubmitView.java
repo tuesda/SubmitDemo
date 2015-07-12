@@ -3,6 +3,7 @@ package com.tuesda.submit;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -503,6 +504,10 @@ public class SubmitView extends View {
         correctPaint.setStyle(Paint.Style.STROKE);
         correctPaint.setStrokeWidth(10f);
         correctPaint.setColor(0xffffffff);
+        correctPaint.setDither(true);
+        correctPaint.setStrokeJoin(Paint.Join.ROUND);
+        correctPaint.setStrokeCap(Paint.Cap.ROUND);
+//        correctPaint.setPathEffect(new CornerPathEffect(5));
 
         int centerX = mWidth/2;
         int centerY = mHeight/2 + mRadius/4;
