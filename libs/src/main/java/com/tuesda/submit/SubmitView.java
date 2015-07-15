@@ -209,6 +209,7 @@ public class SubmitView extends View {
                 canvas.drawText(mText, mWidth/2 - mTextBounds.width()/2, mHeight/2 + mTextBounds.height()/2, mTextPaint);
                 break;
             case SECOND_START:
+                canvas.drawRoundRect(new RectF(PADDING, mHeight / 2 - mRadius, mWidth - PADDING, mHeight / 2 + mRadius), mRadius, mRadius, mBorderPaint);
                 canvas.drawRoundRect(new RectF(PADDING, mHeight / 2 - mRadius, mWidth - PADDING, mHeight / 2 + mRadius),
                         mRadius, mRadius, mBackPaint);
                 mTextPaint.setTextSize(getSecondTextSize());
